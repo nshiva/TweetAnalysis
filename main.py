@@ -19,15 +19,7 @@ def index():
     return "This is the home page! "
  
 
-@app.route('/tuna')
-def tuna():
-	return '<h2>Tuna is good</h2>'
 
-
-@app.route('/p/<username>')
-def profile(username):
-	c = db['tweets'].count()
-	return  render_template("profile.html",name=c)
 
 @app.route('/analysis')
 def analysis():
@@ -55,11 +47,6 @@ def analysis():
 
 	return  render_template("analysis.html",tags=tags,tweetRetweets=tweetRetweets,mumbaiLocations=mumbaiLocations,mumbaiTweetTypes=mumbaiTweetTypes,mumbaiFavorites=mumbaiFavorites,wordCloudText=wordCloudText,mumbaiWeeks=mumbaiWeeks,
 			delhiTags=delhiTags,delhiTweetRetweets=delhiTweetRetweets,delhiTweetTypes=delhiTweetTypes,delhiLocations=delhiLocations,delhiFavorites=delhiFavorites,delhiWeeks=delhiWeeks)
-
-@app.route('/post/<int:post_id>')
-def show_post(post_id):
-	return "<h2>Hey POST ID is %s</h2>" % post_id
-
 
 
 
