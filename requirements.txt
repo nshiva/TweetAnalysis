@@ -38,7 +38,6 @@ Flask==0.12
 Flask-Cors==3.0.2
 Flask-PyMongo==0.5.1
 funcsigs==1.0.2
-functools32==3.2.3.post2
 future==0.16.0
 futures==3.0.5
 gevent==1.2.1
