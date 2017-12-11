@@ -1,7 +1,0 @@
-<!doctype html>
-<title>Welcome to the Flask</title>
-<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='style.css')}}">
-<!--<h1>Total no of tweets {{name}}</h1>-->
-{% for tag in tags %}
-	<h2>{{tag[0]}}</h2>
-{%end for%}
