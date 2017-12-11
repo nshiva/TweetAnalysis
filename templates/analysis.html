@@ -1,0 +1,427 @@
+<!doctype html>
+<title>Analysis of Tweets</title>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://d3js.org/d3.v3.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.4/d3.layout.cloud.min.js"></script>
+
+
+<style type="text/css">
+div{
+	align-items: center;
+}
+h2{
+	
+	color:#3fada8;
+}
+.footer {
+    
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background-color: #3fada8;
+    color: white;
+    text-align: center;
+    padding-top:20px;
+}
+
+
+</style>
+<script type="text/javascript">
+    
+      google.charts.load('current', {'packages':['corechart','bar','geomap']});
+
+      google.charts.setOnLoadCallback(drawChartDelhitweetRetweets);
+      google.charts.setOnLoadCallback(drawChartDelhiLocations);
+      google.charts.setOnLoadCallback(drawDelhiTweetTypes);
+      google.charts.setOnLoadCallback(analyseDelhiFavorites);
+      google.charts.setOnLoadCallback(analyseDelhiByWeeks);
+
+
+
+      google.charts.setOnLoadCallback(drawCharttweetRetweets);
+      google.charts.setOnLoadCallback(drawChartmumbaiLocations);
+      google.charts.setOnLoadCallback(drawMumbaiTweetTypes);     	  
+   	  google.charts.setOnLoadCallback(analyseFavorites);
+   	  google.charts.setOnLoadCallback(analyseByWeeks);
+   	 
+
+
+function drawChartDelhitweetRetweets() {
+
+        var data = google.visualization.arrayToDataTable({{delhiTweetRetweets|tojson|safe}});
+
+        var options = {
+          title: 'Distribution of Original Tweets Vs Retweeted Tweets'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('delhiTweetRetweets'));
+
+        chart.draw(data, options);
+      }   
+
+function drawChartDelhiLocations() {
+
+        var data = google.visualization.arrayToDataTable(
+        {{delhiLocations|tojson|safe}});
+
+        var options = {
+          title: 'Distribution of Locations'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('delhiLocations'));
+
+        chart.draw(data, options);
+      }	  
+function drawDelhiTweetTypes() {
+
+      
+      var data = google.visualization.arrayToDataTable({{delhiTweetTypes|tojson|safe}});
+
+      var options = {
+        title: 'Tweet Types Distribution',
+        chartArea: {width: '50%'},
+        hAxis: {
+          title: 'Total Tweets',
+          minValue: 0
+        },
+        vAxis: {
+          title: 'Type of Tweet',
+           isStacked: true
+        }
+
+      };
+
+      var chart = new google.visualization.BarChart(document.getElementById('delhiTweetTypes'));
+
+      chart.draw(data, options);
+    }
+  
+function analyseDelhiFavorites() {
+
+       var data = google.visualization.arrayToDataTable({{delhiFavorites|tojson|safe}});
+
+      var options = {
+        title: 'Distribution of Favorites of Original Tweets',
+        hAxis: {
+          title: 'Count of Favorites',
+           viewWindow: {
+        			min: 0,
+        			max: 25
+    				},
+     	ticks: [0, 25, 50, 75, 100]
+        },
+        vAxis: {
+          title: 'No of Tweets'
+        }
+ 
+      };
+
+      var chart = new google.visualization.ColumnChart(
+        document.getElementById('delhi_favorites'));
+
+      chart.draw(data, options);
+    }
+function analyseDelhiByWeeks() {
+
+       var data = google.visualization.arrayToDataTable({{delhiWeeks|tojson|safe}});
+
+      var options = {
+        title: 'Distribution of Tweets over day of the week',
+        hAxis: {
+          title: 'Week',
+        },
+        vAxis: {
+          title: 'No of Tweets'
+        }
+      };
+
+      var chart = new google.visualization.ColumnChart(
+        document.getElementById('delhi_weeks'));
+
+      chart.draw(data, options);
+    }
+
+document.addEventListener('DOMContentLoaded', function() {
+   // ...
+   // First define your cloud data, using `text` and `size` properties:
+
+var skillsToDraw = {{tags|tojson|safe}};
+
+// Next you need to use the layout script to calculate the placement, rotation and size of each word:
+
+var width = 900;
+var height = 400;
+var fill = d3.scale.category20();
+
+    d3.layout.cloud()
+    	.size([width, height])
+    	.words(skillsToDraw)
+    	.rotate(function() {
+    		return ~~(Math.random()*2)*45 ;
+    	})
+    	.font("Comic Sans MS")
+    	.fontStyle("bold")
+    	.fontSize(function(d) {
+    		return d.size;
+    	})
+    	.on("end", drawSkillCloud)
+    	.start();
+
+// Finally implement `drawSkillCloud`, which performs the D3 drawing:
+
+    // apply D3.js drawing API
+    function drawSkillCloud(words) {
+    	d3.select("#mumbai-cloud").append("svg")
+    		.attr("width", width)
+    		.attr("height", height)
+    		.append("g")
+    		.attr("transform", "translate(" + ~~(width / 2) + "," + ~~(height / 2) + ")")
+    		.selectAll("text")
+    		.data(words)
+    		.enter().append("text")
+    		.style("font-size", function(d) {
+    			return d.size + "px";
+    		})
+    		.style("-webkit-touch-callout", "none")
+    		.style("-webkit-user-select", "none")
+    		.style("-khtml-user-select", "none")
+    		.style("-moz-user-select", "none")
+    		.style("-ms-user-select", "none")
+    		.style("user-select", "none")
+    		.style("cursor", "default")
+    		.style("font-family", "Impact")
+    		.style("fill", function(d, i) {
+    			return fill(i);
+    		})
+    		.attr("text-anchor", "middle")
+    		.attr("transform", function(d) {
+    			return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+    		})
+    		.text(function(d) {
+    			return d.text;
+    		});
+    }
+
+    //var svg = document.getElementsByTagName("svg")[0];
+    
+    var svg = document.getElementById("mumbai-cloud").getElementsByTagName("svg")[0];
+    var bbox = svg.getBBox();
+    var viewBox = [bbox.x, bbox.y, bbox.width, bbox.height].join(" ");
+    svg.setAttribute("viewBox", viewBox);
+
+
+
+
+
+//Delhi word cloud
+
+var skillsToDraw = {{delhiTags|tojson|safe}};
+
+// Next you need to use the layout script to calculate the placement, rotation and size of each word:
+
+var width = 800;
+var height = 500;
+var fill = d3.scale.category20();
+
+    d3.layout.cloud()
+    	.size([width, height])
+    	.words(skillsToDraw)
+    	.rotate(function() {
+    		return ~~(Math.random()*2)*45 ;
+    	})
+    	.font("Comic Sans MS")
+    	.fontStyle("bold")
+    	.fontSize(function(d) {
+    		return d.size;
+    	})
+    	.on("end", drawSkillCloud1)
+    	.start();
+
+// Finally implement `drawSkillCloud`, which performs the D3 drawing:
+
+    // apply D3.js drawing API
+    function drawSkillCloud1(words) {
+    	d3.select("#delhi-cloud").append("svg")
+    		.attr("width", width)
+    		.attr("height", height)
+    		.append("g")
+    		.attr("transform", "translate(" + ~~(width / 2) + "," + ~~(height / 2) + ")")
+    		.selectAll("text")
+    		.data(words)
+    		.enter().append("text")
+    		.style("font-size", function(d) {
+    			return d.size + "px";
+    		})
+    		.style("-webkit-touch-callout", "none")
+    		.style("-webkit-user-select", "none")
+    		.style("-khtml-user-select", "none")
+    		.style("-moz-user-select", "none")
+    		.style("-ms-user-select", "none")
+    		.style("user-select", "none")
+    		.style("cursor", "default")
+    		.style("font-family", "Impact")
+    		.style("fill", function(d, i) {
+    			return fill(i);
+    		})
+    		.attr("text-anchor", "middle")
+    		.attr("transform", function(d) {
+    			return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+    		})
+    		.text(function(d) {
+    			return d.text;
+    		});
+    }
+
+    var svg = document.getElementById("delhi-cloud").getElementsByTagName("svg")[0];
+    var bbox = svg.getBBox();
+    var viewBox = [bbox.x, bbox.y, bbox.width, bbox.height].join(" ");
+    svg.setAttribute("viewBox", viewBox);
+
+
+
+
+
+
+});   	  
+
+      function drawCharttweetRetweets() {
+
+        var data = google.visualization.arrayToDataTable({{tweetRetweets|tojson|safe}});
+
+        var options = {
+          title: 'Distribution of Original Tweets vs Retweeted Tweets'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('tweetRetweets'));
+
+        chart.draw(data, options);
+      }
+      function drawChartmumbaiLocations() {
+
+        var data = google.visualization.arrayToDataTable(
+        {{mumbaiLocations|tojson|safe}});
+
+        var options = {
+          title: 'Distribution of Locations'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('mumbaiLocations'));
+
+        chart.draw(data, options);
+      }
+
+
+function drawMumbaiTweetTypes() {
+
+      
+      var data = google.visualization.arrayToDataTable({{mumbaiTweetTypes|tojson|safe}});
+
+      var options = {
+        title: 'Tweet Types Distribution',
+        chartArea: {width: '50%'},
+        hAxis: {
+          title: 'Total Tweets',
+          minValue: 0
+        },
+        vAxis: {
+          title: 'Type of Tweet',
+           isStacked: true
+        }
+
+      };
+
+      var chart = new google.visualization.BarChart(document.getElementById('mumbaiTweetTypes'));
+
+      chart.draw(data, options);
+    }
+
+
+function analyseFavorites() {
+
+       var data = google.visualization.arrayToDataTable({{mumbaiFavorites|tojson|safe}});
+
+      var options = {
+        title: 'Distribution of Favorites of Original Tweets',
+        hAxis: {
+          title: 'Count of Favorites',
+        },
+        vAxis: {
+          title: 'No of Tweets'
+        }
+      };
+
+      var chart = new google.visualization.ColumnChart(
+        document.getElementById('mumbai_favorites'));
+
+      chart.draw(data, options);
+    }
+
+function analyseByWeeks() {
+
+       var data = google.visualization.arrayToDataTable({{mumbaiWeeks|tojson|safe}});
+
+      var options = {
+        title: 'Distribution of Tweets over day of the week',
+        hAxis: {
+          title: 'Week',
+        },
+        vAxis: {
+          title: 'No of Tweets'
+        }
+      };
+
+      var chart = new google.visualization.ColumnChart(
+        document.getElementById('mumbai_weeks'));
+
+      chart.draw(data, options);
+    }
+
+</script>
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='style.css')}}">
+<!--<h1>Total no of tweets {{name}}</h1>-->
+<h1> Air Pollution in Delhi/NCR </h1>
+
+<h2>Top Fifteen Hashtags in the Collection</h2>
+<div id="delhi-cloud" style="width: 100%; height: 500px;"></div>
+<h2>Distribution of Original Tweets Vs Retweeted Tweets</h2>
+<div id="delhiTweetRetweets" style="width: 100%; height: 500px;"></div>
+<h2>Distribution of Tweets tweeted by Delhi natives Vs Others</h2>
+<div id="delhiLocations" style="width: 100%; height: 500px;"></div>
+<h2>Distribution of Tweet Types</h2>
+<div id="delhiTweetTypes" style="width: 100%; height: 500px;"></div>
+<p>Note: As the search is based on only text, There are no tweets which have only Image</p>
+<h2>Distribution of Favorite counts on Original Tweets</h2>
+<div id="delhi_favorites" style="width: 100%; height: 500px;"></div>
+<h2>Distribution of Tweets over Day of the Week</h2>
+<div id="delhi_weeks" style="width: 100%; height: 500px;"></div>
+
+
+
+<h1>Mumbai Rains  </h1>
+<!--Mumbai Rains -->
+
+<h2>Top Fifteen Hashtags in the Collection</h2>
+<div id="mumbai-cloud" style="width: 100%; height: 500px;"></div>
+<h2>Distribution of Original Tweets Vs Retweeted Tweets</h2>
+<div id="tweetRetweets" style="width: 100%; height: 500px;"></div>
+<h2>Distribution of Tweets tweeted by Mumbai natives Vs Others</h2>
+<div id="mumbaiLocations" style="width: 100%; height: 500px;"></div>
+<h2>Distribution of Tweet Types</h2>
+<div id="mumbaiTweetTypes" style="width: 100%; height: 500px;"></div>
+<p>Note: As the search is based on only text, There are no tweets which have only Image</p>
+<h2>Distribution of Favorite counts on Original Tweets</h2>
+<div id="mumbai_favorites" style="width: 100%; height: 500px;"></div>
+<h2>Distribution of Tweets over Day of the Week</h2>
+<div id="mumbai_weeks" style="width: 100%; height: 500px;"></div>
+
+
+
+<div class="footer">
+ Submitted to <a href="http://precog.iiitd.edu.in/">Precog</a> &emsp;&emsp;
+ Submitted By <a href="https://twitter.com/shivaaprs">Shiva</a>
+</div>
